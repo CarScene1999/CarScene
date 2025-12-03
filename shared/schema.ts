@@ -1,6 +1,11 @@
-import { pgTable, text, varchar, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
+import { z } from "zod";
 
-// USERS TABLE
+/* --------------------------
+   DATABASE TABLES
+-------------------------- */
+
+// USERS
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
   username: text("username").notNull(),
@@ -9,7 +14,7 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// POSTS TABLE
+// POSTS
 export const posts = pgTable("posts", {
   id: varchar("id").primaryKey(),
   userId: varchar("user_id").notNull(),
@@ -18,7 +23,7 @@ export const posts = pgTable("posts", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// VIDEOS TABLE
+// VIDEOS
 export const videos = pgTable("videos", {
   id: varchar("id").primaryKey(),
   userId: varchar("user_id").notNull(),
@@ -27,7 +32,7 @@ export const videos = pgTable("videos", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// LOCATIONS TABLE
+// LOCATIONS
 export const locations = pgTable("locations", {
   id: varchar("id").primaryKey(),
   userId: varchar("user_id").notNull(),
@@ -37,7 +42,7 @@ export const locations = pgTable("locations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// LIKES TABLE
+// LIKES
 export const likes = pgTable("likes", {
   id: varchar("id").primaryKey(),
   userId: varchar("user_id").notNull(),
@@ -46,7 +51,7 @@ export const likes = pgTable("likes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// COMMENTS TABLE
+// COMMENTS
 export const comments = pgTable("comments", {
   id: varchar("id").primaryKey(),
   userId: varchar("user_id").notNull(),
@@ -54,4 +59,51 @@ export const comments = pgTable("comments", {
   videoId: varchar("video_id"),
   text: text("text"),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// FOLLOWS
+export const follows = pgTable("follows", {
+  id: varchar("id").primaryKey(),
+  followerId: varchar("follower_id").notNull(),
+  followingId: varchar("following_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// SAVES (saved posts / videos)
+export const saves = pgTable("saves", {
+  id: varchar("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  postId: varchar("post_id"),
+  videoId: varchar("video_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+/* --------------------------
+   ZOD INSERT SCHEMAS
+-------------------------- */
+
+export const insertPostSchema = z.object({
+  userId: z.string(),
+  content: z.string().optional(),
+  imageUrl: z.string().optional(),
+});
+
+export const insertVideoSchema = z.object({
+  userId: z.string(),
+  videoUrl: z.string(),
+  thumbnailUrl: z.string().optional(),
+});
+
+export const insertLocationSchema = z.object({
+  userId: z.string(),
+  lat: z.string(),
+  lng: z.string(),
+  label: z.string().optional(),
+});
+
+export const insertCommentSchema = z.object({
+  userId: z.string(),
+  postId: z.string().optional(),
+  videoId: z.string().optional(),
+  text: z.string(),
 });
